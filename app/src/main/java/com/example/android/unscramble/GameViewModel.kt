@@ -1,6 +1,8 @@
 package com.example.android.unscramble
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.android.unscramble.ui.game.MAX_NO_OF_WORDS
 import com.example.android.unscramble.ui.game.SCORE_INCREASE
@@ -31,7 +33,7 @@ class GameViewModel : ViewModel() {
         if (wordsList.contains(currentWord)) {
             getNextWord()
         } else {
-            _currentScrambledWord = String(tempWord)
+            _currentScrambledWord.value = String(tempWord)
             ++_currentWordCount
             wordsList.add(currentWord)
         }
@@ -65,8 +67,8 @@ class GameViewModel : ViewModel() {
     val score: Int
         get() = _score
 
-    private lateinit var _currentScrambledWord: String
-    val currentScrambledWord: String
+    private var _currentScrambledWord = MutableLiveData<String>()
+    val currentScrambledWord: LiveData<String>
         get() = _currentScrambledWord
 
     private var _currentWordCount = 0
