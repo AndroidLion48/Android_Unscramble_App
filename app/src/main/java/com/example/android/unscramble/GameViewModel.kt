@@ -3,6 +3,7 @@ package com.example.android.unscramble
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.android.unscramble.ui.game.MAX_NO_OF_WORDS
+import com.example.android.unscramble.ui.game.SCORE_INCREASE
 import com.example.android.unscramble.ui.game.allWordsList
 
 /**
@@ -15,6 +16,7 @@ import com.example.android.unscramble.ui.game.allWordsList
 class GameViewModel : ViewModel() {
     private var wordsList: MutableList<String> = mutableListOf()
     private lateinit var currentWord: String
+
     /*
     * Updates currentWord and currentScrambledWord with the next word.
     */
@@ -42,12 +44,26 @@ class GameViewModel : ViewModel() {
         } else false
     }
 
+    private fun increaseScore() {
+        _score += SCORE_INCREASE
+    }
+
+    fun isUserWordCorrect(playerWord: String): Boolean {
+        if (playerWord.equals(currentWord, true)) {
+            increaseScore()
+            return true
+        }
+        return false
+    }
+
     init {
         Log.d("GameFragment", "GameViewModel created!")
         getNextWord()
     }
 
-    private var score = 0
+    private var _score = 0
+    val score: Int
+        get() = _score
 
     private lateinit var _currentScrambledWord: String
     val currentScrambledWord: String
