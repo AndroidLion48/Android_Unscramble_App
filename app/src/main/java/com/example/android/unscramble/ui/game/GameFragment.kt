@@ -10,7 +10,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -21,6 +21,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.android.unscramble.GameViewModel
 import com.example.android.unscramble.R
 import com.example.android.unscramble.databinding.GameFragmentBinding
 
@@ -29,6 +31,9 @@ import com.example.android.unscramble.databinding.GameFragmentBinding
  */
 class GameFragment : Fragment() {
 
+    // Property Delegation  <property-name> : <property-type> by <delegate-class>()
+    private val viewModel: GameViewModel by viewModels()
+    
     private var score = 0
     private var currentWordCount = 0
     private var currentScrambledWord = "test"
@@ -42,8 +47,8 @@ class GameFragment : Fragment() {
     // first fragment
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         // Inflate the layout XML file and return a binding object instance
         binding = GameFragmentBinding.inflate(inflater, container, false)
@@ -60,7 +65,8 @@ class GameFragment : Fragment() {
         updateNextWordOnScreen()
         binding.score.text = getString(R.string.score, 0)
         binding.wordCount.text = getString(
-                R.string.word_count, 0, MAX_NO_OF_WORDS)
+            R.string.word_count, 0, MAX_NO_OF_WORDS
+        )
     }
 
     /*
