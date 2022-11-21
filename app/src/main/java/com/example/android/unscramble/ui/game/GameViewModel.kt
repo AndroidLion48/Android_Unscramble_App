@@ -1,12 +1,13 @@
-package com.example.android.unscramble
+package com.example.android.unscramble.ui.game
 
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.TtsSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.example.android.unscramble.ui.game.MAX_NO_OF_WORDS
-import com.example.android.unscramble.ui.game.SCORE_INCREASE
-import com.example.android.unscramble.ui.game.allWordsList
 
 /**
  * Created by Clarence E Moore on 2022-11-16.
@@ -25,9 +26,22 @@ class GameViewModel : ViewModel() {
     val score: LiveData<Int>
         get() = _score
 
-    private var _currentScrambledWord = MutableLiveData(0)
-    val currentScrambledWord: LiveData<Int>
-        get() = _currentScrambledWord
+    private var _currentScrambledWord = MutableLiveData<String>()
+    val currentScrambledWord: LiveData<Spannable> = Transformations.map(_currentScrambledWord) {
+        if (it == null) {
+            SpannableString("")
+        } else {
+            val scrambledWord = it.toString()
+            val spannable: Spannable = SpannableString(scrambledWord)
+            spannable.setSpan(
+                TtsSpan.VerbatimBuilder(scrambledWord).build(),
+                0,
+                scrambledWord.length,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+            spannable
+        }
+    }
 
     private var wordsList: MutableList<String> = mutableListOf()
     private lateinit var currentWord: String
@@ -35,11 +49,6 @@ class GameViewModel : ViewModel() {
     init {
         Log.d("GameFragment", "GameViewModel created!")
         getNextWord()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("GameFragment", "GameViewModel Destroyed!")
     }
 
     /*
@@ -56,8 +65,8 @@ class GameViewModel : ViewModel() {
         if (wordsList.contains(currentWord)) {
             getNextWord()
         } else {
-            _currentScrambledWord.value = String()
-            _currentWordCount.value = (_currentWordCount.value)?.inc()
+            _currentScrambledWord.value = String(tempWord)
+            _currentWordCount.value = _currentWordCount.value?.inc()
             wordsList.add(currentWord)
         }
     }

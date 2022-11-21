@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.android.unscramble.GameViewModel
 import com.example.android.unscramble.R
 import com.example.android.unscramble.databinding.GameFragmentBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -47,6 +46,7 @@ class GameFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
+
     ): View {
         // Inflate the layout XML file and return a binding object instance
         binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
@@ -62,20 +62,16 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.gameViewModel = viewModel
+        binding.maxNoOfWords = MAX_NO_OF_WORDS
+
+        // Specify the fragment view as the lifecycle owner of the binding.
+        // This is used so that the binding can observe LiveData updates
+        binding.lifecycleOwner = viewLifecycleOwner
+
         // Setup a click listener for the Submit and Skip buttons.
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
-
-        viewModel.score.observe(viewLifecycleOwner
-        ) { newScore ->
-            binding.wordCount.text = getString(R.string.word_count, 0, MAX_NO_OF_WORDS)
-        }
-
-        // Observe the scrambledCharArray LiveData, passing in the LifecycleOwner and the observer.
-        viewModel.currentScrambledWord.observe(viewLifecycleOwner
-        ) { newWordCount ->
-            binding.wordCount.text = getString(R.string.word_count, newWordCount, MAX_NO_OF_WORDS)
-        }
     }
 
     /*
@@ -107,15 +103,6 @@ class GameFragment : Fragment() {
         }
     }
 
-    /*
-     * Gets a random word for the list of words and shuffles the letters in it.
-     */
-    private fun getNextScrambledWord(): String {
-        val tempWord = allWordsList.random().toCharArray()
-        tempWord.shuffle()
-        return String(tempWord)
-    }
-
     private fun showFinalScoreDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.congratulations))
@@ -143,11 +130,6 @@ class GameFragment : Fragment() {
      */
     private fun exitGame() {
         activity?.finish()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("GameFragment", "GameFragment destroyed!")
     }
 
 
